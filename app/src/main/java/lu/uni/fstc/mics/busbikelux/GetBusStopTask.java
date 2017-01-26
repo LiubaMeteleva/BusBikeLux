@@ -75,13 +75,13 @@ class GetBusStopTask extends AsyncTask<Object, Void, String> {
         for (int i = 0; i < limit; i++) {
             String temp = lines[i];
             Log.d(LOG_TAG, "temp: " + temp);
-            if (temp.length() <= 10)
-                continue;
-            String lat = temp.replaceAll(".*\\@X=|\\@Y=.*", "").replace(",", ".");
-            String lng = temp.replaceAll(".*\\@Y=|\\@U=.*", "").replace(",", ".");
-            String name = temp.replaceAll(".*\\@O=|\\@X=.*", "");
-            Log.d(LOG_TAG, name);
-            mapsActivity.addBusStop(new LatLng(Double.parseDouble(lng), Double.parseDouble(lat)), name);
+            if (temp.length() > 10) {
+                String lat = temp.replaceAll(".*\\@X=|\\@Y=.*", "").replace(",", ".");
+                String lng = temp.replaceAll(".*\\@Y=|\\@U=.*", "").replace(",", ".");
+                String name = temp.replaceAll(".*\\@O=|\\@X=.*", "");
+                Log.d(LOG_TAG, name);
+                mapsActivity.addBusStop(new LatLng(Double.parseDouble(lng), Double.parseDouble(lat)), name);
+            }
         }
     }
 }

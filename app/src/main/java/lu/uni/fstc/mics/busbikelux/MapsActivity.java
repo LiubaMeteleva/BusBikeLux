@@ -1,6 +1,8 @@
 package lu.uni.fstc.mics.busbikelux;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -9,7 +11,11 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ToggleButton;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -45,6 +51,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ArrayList<Marker> bikeStops = new ArrayList<>();
     float blue = BitmapDescriptorFactory.HUE_AZURE;
     float yellow = BitmapDescriptorFactory.HUE_YELLOW;
+    private Integer busStopDistance;
     ArrayList<LatLng> busStopList;
     ArrayList<String> busStopNameList;
     ArrayList<LatLng> bikeStopList;
@@ -73,7 +80,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         toggleBus.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    new GetBusStopTask(thisActivity).execute(currentLatLng, 500, 0);
+                    new GetBusStopTask(thisActivity).execute(currentLatLng, 150, 1);
                 } else {
                     for (Marker marker : busStops) {
                         marker.remove();
@@ -91,6 +98,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         marker.remove();
                     }
                 }
+            }
+        });
+
+        Button btnMoreBus = (Button) findViewById(R.id.btsMoreBus);
+        btnMoreBus.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                showInputDialog();
             }
         });
 
@@ -208,5 +222,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .icon(BitmapDescriptorFactory.defaultMarker(yellow)));
         if (newMarker != null)
             bikeStops.add(newMarker);
+    }
+
+    protected void showInputDialog() {
+        LayoutInflater layoutInflater = LayoutInflater.from(MapsActivity.this);
+        View promptView = layoutInflater.inflate(R.layout.input_dialog, null);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MapsActivity.this);
+        alertDialogBuilder.setView(promptView);
+
+        final EditText editText = (EditText) promptView.findViewById(R.id.edittext);
+        // setup a dialog window
+        alertDialogBuilder.setCancelable(false)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        String input = String.valueOf(editText.getText());
+                        busStopDistance = Integer.parseInt(input);
+                        new GetBusStopTask(thisActivity).execute(currentLatLng, busStopDistance, 0);
+                    }
+                })
+                .setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+
+        // create an alert dialog
+        AlertDialog alert = alertDialogBuilder.create();
+        alert.show();
     }
 }

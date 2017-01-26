@@ -31,8 +31,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     private final static String LOG_TAG = "MapsActivity";
-    public final static  String EXTRA_LAT = "LAT";
-    public final static  String EXTRA_LNG = "LNG";
+    public final static String EXTRA_LAT = "LAT";
+    public final static String EXTRA_LNG = "LNG";
     private static final LatLng LUXEMBOURG = new LatLng(49.611622, 6.131935);
 
     MapsActivity thisActivity;
@@ -45,6 +45,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ArrayList<Marker> bikeStops = new ArrayList<>();
     float blue = BitmapDescriptorFactory.HUE_AZURE;
     float yellow = BitmapDescriptorFactory.HUE_YELLOW;
+    ArrayList<LatLng> busStopList;
+    ArrayList<String> busStopNameList;
+    ArrayList<LatLng> bikeStopList;
+    ArrayList<String> bikeStopNameList;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +93,41 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
         });
+
+        // Restoring the markers on configuration changes
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey("busStopList")) {
+                busStopList = savedInstanceState.getParcelableArrayList("busStopList");
+                busStopNameList = savedInstanceState.getStringArrayList("busStopNameList");
+                if (busStopList != null) {
+                    for (int i = 0; i < busStopList.size(); i++) {
+                        addBusStop(busStopList.get(i), busStopNameList.get(i));
+                    }
+                }
+            }
+            if (savedInstanceState.containsKey("bikeStopList")) {
+                bikeStopList = savedInstanceState.getParcelableArrayList("bikeStopList");
+                bikeStopNameList = savedInstanceState.getStringArrayList("bikeStopNameList");
+                if (bikeStopList != null) {
+                    for (int i = 0; i < bikeStopList.size(); i++) {
+                        addBikeStop(bikeStopList.get(i), bikeStopNameList.get(i));
+                    }
+                }
+            }
+        }
+    }
+
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        // Adding the pointList arraylist to Bundle
+        outState.putParcelableArrayList("busStopList", busStopList);
+        outState.putStringArrayList("busStopNameList", busStopNameList);
+        outState.putParcelableArrayList("bikeStopList", bikeStopList);
+        outState.putStringArrayList("bikeStopNameList", bikeStopNameList);
+
+        // Saving the bundle
+        super.onSaveInstanceState(outState);
     }
 
     protected void onStart() {

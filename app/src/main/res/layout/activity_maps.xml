@@ -27,7 +27,9 @@ android:layout_height="fill_parent">
         android:gravity="center"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:textOff = "No bike"
+        android:textOn = "BIKE"/>
 
     <ToggleButton
         android:id="@+id/toggBtnBus"
@@ -35,6 +37,8 @@ android:layout_height="fill_parent">
         android:layout_height="wrap_content"
         android:gravity="center"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true" />
+        android:layout_alignParentLeft="true"
+        android:textOff = "No bus"
+        android:textOn = "BUS"/>
     />
 </RelativeLayout>

@@ -2,4 +2,5 @@
     <string name="app_name">BusBikeLux</string>
     <string name="title_activity_maps">BusBikeLux</string>
     <string name="infoWindowText">Click to get more info</string>
+    <string name="bus_list_title">Buses list</string>
 </resources>

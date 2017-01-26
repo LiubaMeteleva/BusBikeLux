@@ -1,15 +1,15 @@
 package lu.uni.fstc.mics.busbikelux;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.widget.CompoundButton;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -30,7 +30,9 @@ import java.util.ArrayList;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
-    private final String LOG_TAG = "MapsActivity";
+    private final static String LOG_TAG = "MapsActivity";
+    public final static  String EXTRA_LAT = "LAT";
+    public final static  String EXTRA_LNG = "LNG";
     private static final LatLng LUXEMBOURG = new LatLng(49.611622, 6.131935);
 
     MapsActivity thisActivity;
@@ -66,7 +68,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         toggleBus.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    new GetBusStopTask(thisActivity).execute(currentLatLng, 500, 1);
+                    new GetBusStopTask(thisActivity).execute(currentLatLng, 500, 0);
                 } else {
                     for (Marker marker : busStops) {
                         marker.remove();
@@ -117,7 +119,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Log.d(LOG_TAG, "onMapReady");
         mMap = googleMap;
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
             return;
         }
         mMap.setMyLocationEnabled(true);
@@ -136,8 +137,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onInfoWindowClick(Marker marker) {
-        Toast.makeText(this, "Info window clicked",
-                Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, BusListActivity.class);
+        intent.putExtra(EXTRA_LAT, marker.getPosition().latitude);
+        intent.putExtra(EXTRA_LNG, marker.getPosition().longitude);
+        startActivity(intent);
     }
 
     @Override

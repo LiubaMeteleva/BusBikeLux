@@ -2,11 +2,8 @@ package lu.uni.fstc.mics.busbikelux;
 
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.CompoundButton;
 
 import com.google.android.gms.maps.model.LatLng;
-
-
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -37,11 +34,11 @@ class GetBusStopTask extends AsyncTask<Object, Void, String> {
 
     @Override
     protected String doInBackground(Object... params) {
-        LatLng position = (LatLng)params[0];
-        distance = (Integer)params[1] >= 0 ? (Integer)params[1] : distance;
-        stopLimit = (Integer)params[2] >=0 ? (Integer)params[2] : stopLimit;
+        LatLng position = (LatLng) params[0];
+        distance = (Integer) params[1] >= 5 ? (Integer) params[1] : distance; // Min distance 5 m
+        stopLimit = (Integer) params[2] >= 1 ? (Integer) params[2] : stopLimit; // At least 1 stop
         Log.d(LOG_TAG, distance + " = distance");
-        location = "&look_x=" + String.format("%.6f",position.longitude).replace(".", "") +
+        location = "&look_x=" + String.format("%.6f", position.longitude).replace(".", "") +
                 "&look_y=" + String.format("%.6f", position.latitude).replace(".", "");
         while (resultJson.length() <= 0) {
             busStopUrl = BEGINNING_BUS_STOP_URL + distance + location;
@@ -75,10 +72,10 @@ class GetBusStopTask extends AsyncTask<Object, Void, String> {
         Integer limit = lines.length;
         if (stopLimit != -1)
             limit = (stopLimit < limit) ? stopLimit : limit;
-        for (int i = 0; i < limit; i++){
+        for (int i = 0; i < limit; i++) {
             String temp = lines[i];
-            Log.d(LOG_TAG, "temp: "+temp);
-            if(temp.length() <= 10)
+            Log.d(LOG_TAG, "temp: " + temp);
+            if (temp.length() <= 10)
                 continue;
             String lat = temp.replaceAll(".*\\@X=|\\@Y=.*", "").replace(",", ".");
             String lng = temp.replaceAll(".*\\@Y=|\\@U=.*", "").replace(",", ".");

@@ -134,13 +134,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        // Adding the pointList arraylist to Bundle
         outState.putParcelableArrayList("busStopList", busStopList);
         outState.putStringArrayList("busStopNameList", busStopNameList);
         outState.putParcelableArrayList("bikeStopList", bikeStopList);
         outState.putStringArrayList("bikeStopNameList", bikeStopNameList);
 
-        // Saving the bundle
         super.onSaveInstanceState(outState);
     }
 
@@ -231,7 +229,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         alertDialogBuilder.setView(promptView);
 
         final EditText editText = (EditText) promptView.findViewById(R.id.edittext);
-        // setup a dialog window
         alertDialogBuilder.setCancelable(false)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
@@ -246,8 +243,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 dialog.cancel();
                             }
                         });
-
-        // create an alert dialog
         AlertDialog alert = alertDialogBuilder.create();
         alert.show();
     }

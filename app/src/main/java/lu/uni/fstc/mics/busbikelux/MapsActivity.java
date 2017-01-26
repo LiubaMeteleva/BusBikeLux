@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -56,7 +57,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     ArrayList<String> busStopNameList;
     ArrayList<LatLng> bikeStopList;
     ArrayList<String> bikeStopNameList;
-
+    ToggleButton toggleBus;
+    ToggleButton toggleBike;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +78,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .build();
         }
 
-        ToggleButton toggleBus = (ToggleButton) findViewById(R.id.toggBtnBus);
+        toggleBus = (ToggleButton) findViewById(R.id.toggBtnBus);
         toggleBus.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
@@ -88,11 +90,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
         });
-        ToggleButton toggleBike = (ToggleButton) findViewById(R.id.toggBtnBike);
+        toggleBike = (ToggleButton) findViewById(R.id.toggBtnBike);
         toggleBike.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    // The toggle is enabled
+                    Toast.makeText(thisActivity, "Will work soon...", Toast.LENGTH_SHORT).show();
                 } else {
                     for (Marker marker : bikeStops) {
                         marker.remove();
@@ -202,6 +204,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void addBusStop(LatLng position, String name) {
         Log.d(LOG_TAG, name);
+        toggleBus.setChecked(true);
         Marker newMarker = mMap.addMarker(new MarkerOptions()
                 .position(position)
                 .title(name)
@@ -213,6 +216,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void addBikeStop(LatLng position, String name) {
         Log.d(LOG_TAG, name);
+        toggleBike.setChecked(true);
         Marker newMarker = mMap.addMarker(new MarkerOptions()
                 .position(position)
                 .title(name)

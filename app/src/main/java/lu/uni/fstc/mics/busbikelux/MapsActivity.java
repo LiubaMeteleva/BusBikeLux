@@ -66,10 +66,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         toggleBus.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-//                    Toast toast = Toast.makeText(context, currentLatLng.toString(), Toast.LENGTH_SHORT);
-//                    toast.show();
-//                    LatLng test = new LatLng(49.614333, 6.101001);
-                    new GetBusStopTask(thisActivity).execute(currentLatLng);
+                    new GetBusStopTask(thisActivity).execute(currentLatLng, 500, 1);
                 } else {
                     for (Marker marker : busStops) {
                         marker.remove();

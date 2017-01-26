@@ -18,13 +18,14 @@ import java.net.URL;
  * Created by user on 26.01.17.
  */
 
-class GetBusStopTask extends AsyncTask<LatLng, Void, String> {
+class GetBusStopTask extends AsyncTask<Object, Void, String> {
 
     private final String LOG_TAG = "GetBusStopTask";
     private final String BEGINNING_BUS_STOP_URL = "http://travelplanner.mobiliteit.lu/hafas/query.exe/dot?performLocating=2&tpl=stop2csv&stationProxy=yes&look_maxdist=";
     private String busStopUrl;
     private String location;
-    private int distance = 150;
+    private Integer distance = 150;
+    private Integer stopLimit = -1;
     HttpURLConnection urlConnection = null;
     BufferedReader reader = null;
     String resultJson = "";
@@ -35,9 +36,11 @@ class GetBusStopTask extends AsyncTask<LatLng, Void, String> {
     }
 
     @Override
-    protected String doInBackground(LatLng... params) {
+    protected String doInBackground(Object... params) {
         LatLng position = (LatLng)params[0];
-        Log.d(LOG_TAG, resultJson.length() + "");
+        distance = (Integer)params[1] >= 0 ? (Integer)params[1] : distance;
+        stopLimit = (Integer)params[2] >=0 ? (Integer)params[2] : stopLimit;
+        Log.d(LOG_TAG, distance + " = distance");
         location = "&look_x=" + String.format("%.6f",position.longitude).replace(".", "") +
                 "&look_y=" + String.format("%.6f", position.latitude).replace(".", "");
         while (resultJson.length() <= 0) {
@@ -59,7 +62,7 @@ class GetBusStopTask extends AsyncTask<LatLng, Void, String> {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            distance *= 2; // Increase distance is there are no bus
+            distance *= 2; // Increase distance is there are no bus stop
         }
         return resultJson;
     }
@@ -68,11 +71,19 @@ class GetBusStopTask extends AsyncTask<LatLng, Void, String> {
     @Override
     protected void onPostExecute(String strJson) {
         super.onPostExecute(strJson);
-        for (String temp: strJson.split("\n")){
+        String[] lines = strJson.split(";");
+        Integer limit = lines.length;
+        if (stopLimit != -1)
+            limit = (stopLimit < limit) ? stopLimit : limit;
+        for (int i = 0; i < limit; i++){
+            String temp = lines[i];
+            Log.d(LOG_TAG, "temp: "+temp);
+            if(temp.length() <= 10)
+                continue;
             String lat = temp.replaceAll(".*\\@X=|\\@Y=.*", "").replace(",", ".");
             String lng = temp.replaceAll(".*\\@Y=|\\@U=.*", "").replace(",", ".");
             String name = temp.replaceAll(".*\\@O=|\\@X=.*", "");
-            Log.d(LOG_TAG, lat);
+            Log.d(LOG_TAG, name);
             mapsActivity.addBusStop(new LatLng(Double.parseDouble(lng), Double.parseDouble(lat)), name);
         }
     }

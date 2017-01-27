@@ -38,6 +38,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     private final static String LOG_TAG = "MapsActivity";
+    public final static String EXTRA_MARKER_NAME = "NAME";
     public final static String EXTRA_LAT = "LAT";
     public final static String EXTRA_LNG = "LNG";
     private static final LatLng LUXEMBOURG = new LatLng(49.611622, 6.131935);
@@ -157,7 +158,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onConnected(Bundle connectionHint) {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
             return;
         }
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
@@ -192,6 +192,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onInfoWindowClick(Marker marker) {
         Intent intent = new Intent(this, BusListActivity.class);
+        intent.putExtra(EXTRA_MARKER_NAME, marker.getTitle());
         intent.putExtra(EXTRA_LAT, marker.getPosition().latitude);
         intent.putExtra(EXTRA_LNG, marker.getPosition().longitude);
         startActivity(intent);

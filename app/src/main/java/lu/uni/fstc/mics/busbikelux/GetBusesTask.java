@@ -101,6 +101,9 @@ public class GetBusesTask extends AsyncTask<LatLng, Void, String> {
         HashMap<String, String> buses = new HashMap<String, String>();
         try {
             dataJsonObj = new JSONObject(strJson);
+            if (dataJsonObj.isNull( "Departure")){
+                return new String[]{"All buses sleep 😴"};
+            }
             JSONArray departures = dataJsonObj.getJSONArray("Departure");
 
             for (int i = 0; i < departures.length(); i++) {

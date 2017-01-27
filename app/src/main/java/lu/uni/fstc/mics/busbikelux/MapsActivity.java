@@ -246,8 +246,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         String input = String.valueOf(editText.getText());
-                        busStopDistance = Integer.parseInt(input);
-                        new GetBusStopTask(thisActivity).execute(currentLatLng, busStopDistance, 0);
+                        if(input.length() >0 ){
+                            busStopDistance = Integer.parseInt(input);
+                            new GetBusStopTask(thisActivity).execute(currentLatLng, busStopDistance, 0);
+                        }
                     }
                 })
                 .setNegativeButton("Cancel",

@@ -25,6 +25,7 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -34,7 +35,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener,
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMarkerClickListener,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     private final static String LOG_TAG = "MapsActivity";
@@ -176,6 +177,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return;
         }
         mMap.setMyLocationEnabled(true);
+        mMap.setOnMarkerClickListener((GoogleMap.OnMarkerClickListener) this);
         mMap.setOnInfoWindowClickListener(this);
         Log.d(LOG_TAG, "Current position: " + currentLatLng.latitude + "; " + currentLatLng.latitude);
 //        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LUXEMBOURG, 13));
@@ -191,12 +193,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onInfoWindowClick(Marker marker) {
+        if (bikeStops.contains(marker)){
+            Toast.makeText(context, "No info available \uD83D\uDE1E", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         Intent intent = new Intent(this, BusListActivity.class);
         intent.putExtra(EXTRA_MARKER_NAME, marker.getTitle());
         intent.putExtra(EXTRA_LAT, marker.getPosition().latitude);
         intent.putExtra(EXTRA_LNG, marker.getPosition().longitude);
         startActivity(intent);
-        //http://stackoverflow.com/questions/18567563/google-map-v2-custom-infowindow-with-two-clickable-buttons-or-imageview
     }
 
     @Override
@@ -206,11 +212,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void addBusStop(LatLng position, String name) {
         Log.d(LOG_TAG, name);
+        name = name + '\n'+getDistance(currentLatLng, position);
         toggleBus.setChecked(true);
         Marker newMarker = mMap.addMarker(new MarkerOptions()
                 .position(position)
                 .title(name)
-                .snippet(getString(R.string.infoWindowText))
+                .snippet("Distance: "+getDistance(currentLatLng, position))
                 .icon(BitmapDescriptorFactory.defaultMarker(blue)));
         if (newMarker != null)
             busStops.add(newMarker);
@@ -222,7 +229,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Marker newMarker = mMap.addMarker(new MarkerOptions()
                 .position(position)
                 .title(name)
-                .snippet(getString(R.string.infoWindowText))
+                .snippet("Distance: "+getDistance(currentLatLng, position))
                 .icon(BitmapDescriptorFactory.defaultMarker(yellow)));
         if (newMarker != null)
             bikeStops.add(newMarker);
@@ -251,5 +258,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         });
         AlertDialog alert = alertDialogBuilder.create();
         alert.show();
+    }
+
+    private String getDistance(LatLng my_latlong,LatLng frnd_latlong){
+        Location l1=new Location("One");
+        l1.setLatitude(my_latlong.latitude);
+        l1.setLongitude(my_latlong.longitude);
+
+        Location l2=new Location("Two");
+        l2.setLatitude(frnd_latlong.latitude);
+        l2.setLongitude(frnd_latlong.longitude);
+
+        float distance=l1.distanceTo(l2);
+
+        String dist=String.format("%.2f", distance)+" m";
+
+
+        if(distance>1000.0f)
+        {
+            distance=distance/1000.0f;
+            dist=String.format("%.2f", distance)+" km";
+        }
+        return dist;
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        Toast.makeText(context, getString(R.string.infoWindowText), Toast.LENGTH_SHORT).show();
+        return false;
     }
 }

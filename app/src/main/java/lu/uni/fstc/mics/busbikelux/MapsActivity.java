@@ -95,7 +95,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         toggleBike.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    Toast.makeText(thisActivity, "Will work soon...", Toast.LENGTH_SHORT).show();
+                    new GetBikeStopTask(thisActivity).execute();
                 } else {
                     for (Marker marker : bikeStops) {
                         marker.remove();
@@ -196,6 +196,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         intent.putExtra(EXTRA_LAT, marker.getPosition().latitude);
         intent.putExtra(EXTRA_LNG, marker.getPosition().longitude);
         startActivity(intent);
+        //http://stackoverflow.com/questions/18567563/google-map-v2-custom-infowindow-with-two-clickable-buttons-or-imageview
     }
 
     @Override
